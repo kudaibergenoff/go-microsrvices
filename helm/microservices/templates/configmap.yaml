@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: services-config
+  namespace: {{ .Values.namespace }}
+data:
+  KAFKA_BROKERS: "kafka:29092"
+  KAFKA_TOPIC: "user.registered"
+  ORDER_KAFKA_TOPIC: "order.events"
+  AUTH_DB_HOST: {{ .Values.services.auth.db.host | quote }}
+  AUTH_DB_PORT: {{ .Values.services.auth.db.port | quote }}
+  USER_DB_HOST: {{ .Values.services.user.db.host | quote }}
+  USER_DB_PORT: {{ .Values.services.user.db.port | quote }}
+  PRODUCT_DB_HOST: {{ .Values.services.product.db.host | quote }}
+  PRODUCT_DB_PORT: {{ .Values.services.product.db.port | quote }}
+  ORDER_DB_HOST: {{ .Values.services.order.db.host | quote }}
+  ORDER_DB_PORT: {{ .Values.services.order.db.port | quote }}
+  AUTH_GRPC_HOST: "auth-service"
+  AUTH_GRPC_PORT: {{ .Values.services.auth.grpcPort | quote }}
+  USER_GRPC_HOST: "user-service"
+  USER_GRPC_PORT: {{ .Values.services.user.grpcPort | quote }}
+  PRODUCT_GRPC_HOST: "product-service"
+  PRODUCT_GRPC_PORT: {{ .Values.services.product.grpcPort | quote }}
+  ORDER_GRPC_HOST: "order-service"
+  ORDER_GRPC_PORT: {{ .Values.services.order.grpcPort | quote }}
+  MEDIA_GRPC_HOST: "media-service"
+  MEDIA_GRPC_PORT: {{ .Values.services.media.grpcPort | quote }}
+  NOTIFICATION_GRPC_HOST: "notification-service"
+  NOTIFICATION_GRPC_PORT: {{ .Values.services.notification.grpcPort | quote }}
+  KEYCLOAK_URL: "http://keycloak:8080"
+  KEYCLOAK_REALM: "microservices"
+  MINIO_ENDPOINT: "minio:9000"
+  MINIO_BUCKET: "media"
+  MINIO_USE_SSL: "false"
+  SMTP_HOST: "mailhog"
+  SMTP_PORT: "1025"
+  JAEGER_ENDPOINT: "http://jaeger:4318"

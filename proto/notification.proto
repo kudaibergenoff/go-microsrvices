@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package notification;
+
+option go_package = "github.com/zhanuzak/microservices/proto/notification";
+
+service NotificationService {
+  rpc SendEmail(SendEmailRequest) returns (SendEmailResponse);
+  rpc SendOrderNotification(OrderNotificationRequest) returns (SendEmailResponse);
+}
+
+message SendEmailRequest {
+  string to = 1;
+  string subject = 2;
+  string body = 3;
+}
+
+message SendEmailResponse {
+  bool success = 1;
+}
+
+message OrderNotificationRequest {
+  string email = 1;
+  int64 order_id = 2;
+  string status = 3;
+  double total_price = 4;
+}

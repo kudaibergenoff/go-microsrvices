@@ -1,0 +1,14 @@
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+main
+tmp/
+vendor/
+.claude/
+.vscode/
+.idea/
+.cursor/

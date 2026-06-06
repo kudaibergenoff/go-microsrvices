@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package media;
+
+option go_package = "github.com/zhanuzak/microservices/proto/media";
+
+service MediaService {
+  rpc UploadFile(UploadFileRequest) returns (UploadFileResponse);
+  rpc DeleteFile(DeleteFileRequest) returns (DeleteFileResponse);
+  rpc GetFileURL(GetFileURLRequest) returns (GetFileURLResponse);
+}
+
+message UploadFileRequest {
+  bytes data = 1;
+  string filename = 2;
+  string content_type = 3;
+  string folder = 4;
+}
+
+message UploadFileResponse {
+  string key = 1;
+  string url = 2;
+}
+
+message DeleteFileRequest {
+  string key = 1;
+}
+
+message DeleteFileResponse {
+  bool success = 1;
+}
+
+message GetFileURLRequest {
+  string key = 1;
+}
+
+message GetFileURLResponse {
+  string url = 1;
+}

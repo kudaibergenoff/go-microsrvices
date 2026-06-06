@@ -1,0 +1,90 @@
+{{- range $name, $svc := list
+  (dict "name" "auth-service" "cfg" $.Values.services.auth)
+  (dict "name" "user-service" "cfg" $.Values.services.user)
+  (dict "name" "product-service" "cfg" $.Values.services.product)
+  (dict "name" "order-service" "cfg" $.Values.services.order)
+  (dict "name" "media-service" "cfg" $.Values.services.media)
+  (dict "name" "notification-service" "cfg" $.Values.services.notification)
+}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $svc.name }}
+  namespace: {{ $.Values.namespace }}
+  labels:
+    app: {{ $svc.name }}
+spec:
+  replicas: {{ $svc.cfg.replicas }}
+  selector:
+    matchLabels:
+      app: {{ $svc.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $svc.name }}
+    spec:
+      containers:
+        - name: {{ $svc.name }}
+          image: {{ $svc.cfg.image }}:{{ $svc.cfg.tag }}
+          imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ $svc.cfg.httpPort }}
+              name: http
+            - containerPort: {{ $svc.cfg.grpcPort }}
+              name: grpc
+          envFrom:
+            - configMapRef:
+                name: services-config
+          env:
+            - name: APP_PORT
+              value: {{ $svc.cfg.httpPort | quote }}
+            - name: GRPC_PORT
+              value: {{ $svc.cfg.grpcPort | quote }}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ $svc.cfg.httpPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            {{- toYaml $svc.cfg.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $svc.name }}
+  namespace: {{ $.Values.namespace }}
+spec:
+  selector:
+    app: {{ $svc.name }}
+  ports:
+    - name: http
+      port: {{ $svc.cfg.httpPort }}
+    - name: grpc
+      port: {{ $svc.cfg.grpcPort }}
+{{- if $svc.cfg.hpa }}
+{{- if $svc.cfg.hpa.enabled }}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ $svc.name }}-hpa
+  namespace: {{ $.Values.namespace }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ $svc.name }}
+  minReplicas: {{ $svc.cfg.hpa.minReplicas }}
+  maxReplicas: {{ $svc.cfg.hpa.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ $svc.cfg.hpa.targetCPU }}
+{{- end }}
+{{- end }}
+{{- end }}

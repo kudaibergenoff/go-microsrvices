@@ -1,0 +1,777 @@
+{
+	"info": {
+		"name": "Microservices API (Kubernetes)",
+		"description": "Full API collection for all microservices via API Gateway.\nIncludes: Auth, Users, Products, Orders, Notifications, Media, Health.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "gateway_url",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "refresh_token",
+			"value": ""
+		},
+		{
+			"key": "user_id",
+			"value": "1"
+		},
+		{
+			"key": "product_id",
+			"value": "1"
+		},
+		{
+			"key": "order_id",
+			"value": "1"
+		},
+		{
+			"key": "media_key",
+			"value": ""
+		}
+	],
+	"item": [
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "Gateway Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/health",
+							"host": ["{{gateway_url}}"],
+							"path": ["health"]
+						}
+					}
+				},
+				{
+					"name": "Metrics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/metrics",
+							"host": ["{{gateway_url}}"],
+							"path": ["metrics"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var json = pm.response.json();",
+									"    if (json.token) pm.collectionVariables.set('token', json.token);",
+									"    if (json.refresh_token) pm.collectionVariables.set('refresh_token', json.refresh_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"newuser@example.com\",\n    \"password\": \"Password123\",\n    \"name\": \"New User\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/auth/register",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var json = pm.response.json();",
+									"    if (json.token) pm.collectionVariables.set('token', json.token);",
+									"    if (json.refresh_token) pm.collectionVariables.set('refresh_token', json.refresh_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/auth/login",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var json = pm.response.json();",
+									"    if (json.token) pm.collectionVariables.set('token', json.token);",
+									"    if (json.refresh_token) pm.collectionVariables.set('refresh_token', json.refresh_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh_token\": \"{{refresh_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/auth/refresh",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "auth", "refresh"]
+						}
+					}
+				},
+				{
+					"name": "Validate Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"{{token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/auth/validate",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "auth", "validate"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Users - Profile (auth required)",
+			"item": [
+				{
+					"name": "Get My Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/users/me",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "users", "me"]
+						}
+					}
+				},
+				{
+					"name": "Update My Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"updated@example.com\",\n    \"name\": \"Updated Name\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/users/me",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "users", "me"]
+						}
+					}
+				},
+				{
+					"name": "Change My Password",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"old_password\": \"123456\",\n    \"new_password\": \"NewPassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/users/me/password",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "users", "me", "password"]
+						}
+					}
+				},
+				{
+					"name": "Upload My Avatar",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "avatar",
+									"type": "file",
+									"src": ""
+								}
+							]
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/users/me/avatar",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "users", "me", "avatar"]
+						}
+					}
+				},
+				{
+					"name": "Delete My Account",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/users/me",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "users", "me"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Users - Admin (admin role required)",
+			"item": [
+				{
+					"name": "List All Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/users/?page=1&limit=10",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "users", ""],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/users/{{user_id}}",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "users", "{{user_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Update User by ID",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin-updated@example.com\",\n    \"name\": \"Admin Updated\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/users/{{user_id}}",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "users", "{{user_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete User by ID",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{gateway_url}}/api/users/{{user_id}}",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "users", "{{user_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Create Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201 || pm.response.code === 200) {",
+									"    var json = pm.response.json();",
+									"    if (json.id) pm.collectionVariables.set('product_id', json.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Laptop Pro 16\",\n    \"description\": \"High performance laptop with 32GB RAM\",\n    \"price\": 1299.99,\n    \"category\": \"electronics\",\n    \"image_url\": \"\",\n    \"stock\": 50\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/products/",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "products", ""]
+						}
+					}
+				},
+				{
+					"name": "List Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/products/?category=&limit=20&offset=0",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "products", ""],
+							"query": [
+								{
+									"key": "category",
+									"value": "",
+									"description": "Filter by category (optional)"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "offset",
+									"value": "0"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Search Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/products/search?q=laptop&limit=20",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "products", "search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "laptop",
+									"description": "Search query (required)"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Product by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/products/{{product_id}}",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "products", "{{product_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Laptop Pro 16 (Updated)\",\n    \"description\": \"Updated description\",\n    \"price\": 1199.99,\n    \"category\": \"electronics\",\n    \"image_url\": \"\",\n    \"stock\": 45\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/products/{{product_id}}",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "products", "{{product_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/products/{{product_id}}",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "products", "{{product_id}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Create Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201 || pm.response.code === 200) {",
+									"    var json = pm.response.json();",
+									"    if (json.id) pm.collectionVariables.set('order_id', json.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": 1,\n    \"product_id\": 1,\n    \"quantity\": 2,\n    \"total_price\": 199.98\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/orders/",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "orders", ""]
+						}
+					}
+				},
+				{
+					"name": "List Orders by User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/orders/?user_id=1&limit=20&offset=0",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "orders", ""],
+							"query": [
+								{
+									"key": "user_id",
+									"value": "1",
+									"description": "User ID (required)"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "offset",
+									"value": "0"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Order by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/orders/{{order_id}}",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "orders", "{{order_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Order Status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": \"shipped\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/orders/{{order_id}}/status",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "orders", "{{order_id}}", "status"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Notifications",
+			"item": [
+				{
+					"name": "Send Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"to\": \"test@example.com\",\n    \"subject\": \"Test Notification\",\n    \"body\": \"Hello from Kubernetes microservices!\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/notifications/email",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "notifications", "email"]
+						}
+					}
+				},
+				{
+					"name": "Send Order Notification",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\",\n    \"order_id\": 1,\n    \"status\": \"confirmed\",\n    \"total_price\": 199.98\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/notifications/order",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "notifications", "order"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Media",
+			"item": [
+				{
+					"name": "Upload File",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    var json = pm.response.json();",
+									"    if (json.key) pm.collectionVariables.set('media_key', json.key);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "",
+									"description": "Image file (jpg, png, gif, webp)"
+								},
+								{
+									"key": "folder",
+									"value": "uploads",
+									"type": "text",
+									"description": "Storage folder (optional, default: uploads)"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/media/upload",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "media", "upload"]
+						}
+					}
+				},
+				{
+					"name": "Get File URL",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/media/url/{{media_key}}?folder=uploads",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "media", "url", "{{media_key}}"],
+							"query": [
+								{
+									"key": "folder",
+									"value": "uploads",
+									"description": "Storage folder (optional)"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete File",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/media/{{media_key}}?folder=uploads",
+							"host": ["{{gateway_url}}"],
+							"path": ["api", "media", "{{media_key}}"],
+							"query": [
+								{
+									"key": "folder",
+									"value": "uploads",
+									"description": "Storage folder (optional)"
+								}
+							]
+						}
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: services-config
+  namespace: microservices
+data:
+  # Kafka
+  KAFKA_BROKERS: "kafka:29092"
+  KAFKA_TOPIC: "user.registered"
+  ORDER_KAFKA_TOPIC: "order.events"
+
+  # Database hosts
+  AUTH_DB_HOST: "auth-db"
+  AUTH_DB_PORT: "5432"
+  USER_DB_HOST: "user-db"
+  USER_DB_PORT: "5432"
+  PRODUCT_DB_HOST: "product-db"
+  PRODUCT_DB_PORT: "5432"
+  ORDER_DB_HOST: "order-db"
+  ORDER_DB_PORT: "5432"
+
+  # gRPC addresses
+  AUTH_GRPC_HOST: "auth-service"
+  AUTH_GRPC_PORT: "50051"
+  USER_GRPC_HOST: "user-service"
+  USER_GRPC_PORT: "50052"
+  PRODUCT_GRPC_HOST: "product-service"
+  PRODUCT_GRPC_PORT: "50053"
+  ORDER_GRPC_HOST: "order-service"
+  ORDER_GRPC_PORT: "50054"
+  MEDIA_GRPC_HOST: "media-service"
+  MEDIA_GRPC_PORT: "50055"
+  NOTIFICATION_GRPC_HOST: "notification-service"
+  NOTIFICATION_GRPC_PORT: "50056"
+
+  # Keycloak
+  KEYCLOAK_URL: "http://keycloak:8080"
+  KEYCLOAK_REALM: "microservices"
+  KEYCLOAK_CLIENT_ID: "auth-service"
+  KEYCLOAK_CLIENT_SECRET: "auth-service-secret"
+
+  # MinIO
+  MINIO_ENDPOINT: "minio:9000"
+  MINIO_BUCKET: "media"
+  MINIO_USE_SSL: "false"
+
+  # SMTP (MailHog)
+  SMTP_HOST: "mailhog"
+  SMTP_PORT: "1025"
+
+  # Jaeger
+  JAEGER_ENDPOINT: "http://jaeger:4318"

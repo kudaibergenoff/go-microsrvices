@@ -1,0 +1,185 @@
+namespace: microservices
+
+global:
+  imageRegistry: ""
+  imagePullPolicy: IfNotPresent
+
+kafka:
+  enabled: true
+  image: apache/kafka:3.9.0
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+keycloak:
+  enabled: true
+  image: quay.io/keycloak/keycloak:24.0
+  admin:
+    user: admin
+    password: admin
+  db:
+    user: keycloak
+    password: keycloak
+
+services:
+  gateway:
+    replicas: 2
+    image: gateway-service
+    tag: latest
+    port: 8080
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "256Mi"
+        cpu: "200m"
+    hpa:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 10
+      targetCPU: 70
+
+  auth:
+    replicas: 2
+    image: auth-service
+    tag: latest
+    httpPort: 8081
+    grpcPort: 50051
+    db:
+      host: auth-db
+      port: 5432
+      user: auth_user
+      password: auth_password
+      name: auth_db
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "256Mi"
+        cpu: "200m"
+    hpa:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPU: 70
+
+  user:
+    replicas: 2
+    image: user-service
+    tag: latest
+    httpPort: 8082
+    grpcPort: 50052
+    db:
+      host: user-db
+      port: 5432
+      user: user_user
+      password: user_password
+      name: user_db
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "256Mi"
+        cpu: "200m"
+    hpa:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPU: 70
+
+  product:
+    replicas: 2
+    image: product-service
+    tag: latest
+    httpPort: 8085
+    grpcPort: 50053
+    db:
+      host: product-db
+      port: 5432
+      user: product_user
+      password: product_password
+      name: product_db
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "256Mi"
+        cpu: "200m"
+    hpa:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPU: 70
+
+  order:
+    replicas: 2
+    image: order-service
+    tag: latest
+    httpPort: 8086
+    grpcPort: 50054
+    db:
+      host: order-db
+      port: 5432
+      user: order_user
+      password: order_password
+      name: order_db
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "256Mi"
+        cpu: "200m"
+    hpa:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPU: 70
+
+  media:
+    replicas: 1
+    image: media-service
+    tag: latest
+    httpPort: 8084
+    grpcPort: 50055
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "256Mi"
+        cpu: "200m"
+
+  notification:
+    replicas: 1
+    image: notification-service
+    tag: latest
+    httpPort: 8083
+    grpcPort: 50056
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "256Mi"
+        cpu: "200m"
+
+minio:
+  enabled: true
+  image: minio/minio:latest
+  accessKey: minioadmin
+  secretKey: minioadmin
+  storage: 5Gi
+
+ingress:
+  enabled: true
+  className: nginx
+  host: api.microservices.local
