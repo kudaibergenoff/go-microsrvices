@@ -371,4 +371,4 @@ GitHub Actions (`.github/workflows/ci.yml`):
 
 ## Лицензия
 
-MIT (или укажите свою лицензию).
+MIT.
